@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Simulated Dice</title>
+      <script type="text/javascript" src="./jquery-1.3.2.js"></script>
+      <script type="text/javascript">
+      // <![CDATA[
+
+      function createUUID() {
+         // THIS IS NOT A REAL UUID!!!
+         var s = [];
+         var hexDigits = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+         for (var i = 0; i < 8; i++) {
+            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+         }
+         s[12] = "4";
+         s[16] = hexDigits.substr((s[16] & 0x3) | 0x8, 1);
+         return s.join("");
+      }
+      
+
+      die = function(sides) {
+         this.sides = sides;
+         this.result = 0;
+
+         this.roll = function() {
+            if(this.result == 0) {
+               this.result = Math.floor(Math.random() * this.sides + 1);
+            } else {
+               return false;
+            }
+         }
+      }
+
+      diegroup = function(count, sides) {
+         this.sides = sides;
+         this.count = count;
+         this.name = this.count + "d" + this.sides;
+
+         this.dice = [];
+
+         this.roll = function() {
+            for(i=0; i<this.count; i++) {
+               this.dice[i] = new die(this.sides);
+               this.dice[i].roll();
+            }
+         }
+
+         this.result = function() {
+            return this.dice;
+         }
+
+         this.sum = function() {
+            var sum = 0;
+            for(i=0; i<this.dice.length; i++){
+               sum += this.dice[i].result;
+            } 
+            return sum;
+         }
+
+         this.min = function() {
+            return this.count;
+         }
+
+         this.max = function() {
+            return this.sides * this.count;
+         }
+      }
+
+      roll = function (in_roll) {
+         this.groups = new Array();
+         this.mods = new Array();
+         this.input = "";
+
+         this.g = function(input) {
+            input = input.val().replace(/ /g,"").replace(/-(\d+)/, "+(-$1)");
+            this.name = input;
+            input = input.split("+");
+            for(i=0;i<input.length;i++){
+               if(input[i].indexOf('d')) {
+                  parts = input[i].split('d');
+                  this.groups.push(new diegroup(parts[0], parts[1]));
+               } else {
+                  this.mods.push(this); 
+               }
+            }
+         }; this.g(in_roll);
+
+         this.roll = function() {
+            for(i=0; i<this.groups.length; i++) {
+               this.groups[i].roll();
+            }
+         }
+
+         this.result = function() {
+            var rollgroups = new Array();
+            for(i=0; i<this.groups.length; i++) {
+               rollgroups.push(this.groups[i].result());
+            }
+            return rollgroups;
+         }
+
+         this.min = function() {
+            var sum = 0;
+            for(i=0; i<this.groups.length; i++) {
+               sum += this.groups[i].min();
+            }
+            return sum;
+         }
+
+         this.max = function() {
+            var sum = 0;
+            for(i=0; i<this.groups.length; i++) {
+               sum += this.groups[i].max();
+            }
+            return sum;
+         }
+      }
+
+      var arolls;
+      var dice;
+      var roll_result;
+
+      var mods;
+      var min;
+      var max;
+
+      reset = function(){
+          each_roll = new Array();
+          dice = new Array();
+          roll_result = new Array();
+
+          mods = 0;
+          min = 0;
+          max = 0;
+      }
+
+      $(function(){
+
+         reset();
+         var form = $("#rolling_form");
+         var result_header = $("#result h2");
+         var input_roll = $("#txt_roll");
+
+         $("#do_roll").click(function(){
+            
+            r = new roll($("#txt_roll"));
+            r.roll();
+
+            var uuid = createUUID();
+            result_header.after("<div class=\"result\" id=\"" + uuid + "\"><h3>" + r.name + "</h3></div>");
+
+            var result_container = $("#" + uuid);
+
+            console.log(r.groups);
+
+            for (var a in r.groups) {
+               var group = r.groups[a];
+               console.log(a);
+
+               for(var b in group.result()) {
+                  var d = group.dice[b];
+                  console.log(d);
+               }
+            }
+
+            reset();
+         });
+
+      });
+      // ]]>
+      </script>
+
+      <script type="text/javascript">
+      // <![CDATA[
+      /*
+                  console.log(this);
+                  if(this.indexOf('d')) {
+                      parts = this.split('d');
+                      min += parts[0];
+                      max += parts[1];
+                      for(i=0; i<parts[0]; i++) {
+                          rollnow = Math.floor(Math.random()*(parts[1] + 1)));
+                          dice.push(rollnow);
+                      }
+                  } else {
+                      mods.push(this); 
+                  }
+               });geearmour@gmail.com
+               console.log(dice);
+
+
+               return false;
+            })
+         });
+         */
+         // ]]>
+               //results_header.after("<h3>" + roll.val() + "</h3>" + "<p>" + roll_results + "</p>");
+      </script>
+   </head>
+   <body>
+
+      <fieldset>
+         <legend>Dice Simulator</legend>
+            <p>
+               <label for="txt_roll">Roll:</label>
+               <input id="txt_roll" name="roll" />
+            </p>
+            <p>
+               <input type="submit" value="Roll" id="do_roll"/>
+            </p>
+      </fieldset>
+
+      <div id="result">
+         <h2>Results:</h2>
+      </div>
+
+   </body>
+</html>
