@@ -40,7 +40,7 @@
          this.dice = [];
 
          this.roll = function() {
-            for(i=0; i<this.count; i++) {
+            for(var i=0; i<this.count; i++) {
                this.dice[i] = new die(this.sides);
                this.dice[i].roll();
             }
@@ -52,7 +52,7 @@
 
          this.sum = function() {
             var sum = 0;
-            for(i=0; i<this.dice.length; i++){
+            for(var i=0; i<this.dice.length; i++){
                sum += this.dice[i].result;
             } 
             return sum;
@@ -76,10 +76,13 @@
             input = input.val().replace(/ /g,"").replace(/-(\d+)/, "+(-$1)");
             this.name = input;
             input = input.split("+");
-            for(i=0;i<input.length;i++){
+            for(var i=0;i<input.length;i++){
                if(input[i].indexOf('d')) {
                   parts = input[i].split('d');
-                  this.groups.push(new diegroup(parts[0], parts[1]));
+                  j = this.groups.length;
+                  console.log(j);
+                  this.groups[j] = new diegroup(parts[0], parts[1]); 
+                  this.groups[j].roll();
                } else {
                   this.mods.push(this); 
                }
@@ -87,14 +90,14 @@
          }; this.g(in_roll);
 
          this.roll = function() {
-            for(i=0; i<this.groups.length; i++) {
+            for(var i=0; i<this.groups.length; i++) {
                this.groups[i].roll();
             }
          }
 
          this.result = function() {
             var rollgroups = new Array();
-            for(i=0; i<this.groups.length; i++) {
+            for(var i=0; i<this.groups.length; i++) {
                rollgroups.push(this.groups[i].result());
             }
             return rollgroups;
@@ -102,7 +105,7 @@
 
          this.min = function() {
             var sum = 0;
-            for(i=0; i<this.groups.length; i++) {
+            for(var i=0; i<this.groups.length; i++) {
                sum += this.groups[i].min();
             }
             return sum;
@@ -110,7 +113,7 @@
 
          this.max = function() {
             var sum = 0;
-            for(i=0; i<this.groups.length; i++) {
+            for(var i=0; i<this.groups.length; i++) {
                sum += this.groups[i].max();
             }
             return sum;
@@ -153,17 +156,17 @@
             var result_container = $("#" + uuid);
 
             console.log(r.groups);
-
+            
             for (var a in r.groups) {
                var group = r.groups[a];
-               console.log(a);
+               console.log(group);
 
                for(var b in group.result()) {
                   var d = group.dice[b];
                   console.log(d);
                }
             }
-
+            
             reset();
          });
 
