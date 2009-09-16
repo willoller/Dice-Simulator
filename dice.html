@@ -3,6 +3,7 @@
    <head>
       <title>Simulated Dice</title>
       <script type="text/javascript" src="./jquery-1.3.2.js"></script>
+      <script type="text/javascript" src="./dice.js"></script>
       <script type="text/javascript">
       // <![CDATA[
 
@@ -18,108 +19,6 @@
          return s.join("");
       }
       
-
-      die = function(sides) {
-         this.sides = sides;
-         this.result = 0;
-
-         this.roll = function() {
-            if(this.result == 0) {
-               this.result = Math.floor(Math.random() * this.sides + 1);
-            } else {
-               return false;
-            }
-         }
-      }
-
-      diegroup = function(count, sides) {
-         this.sides = sides;
-         this.count = count;
-         this.name = this.count + "d" + this.sides;
-
-         this.dice = [];
-
-         this.roll = function() {
-            for(var i=0; i<this.count; i++) {
-               this.dice[i] = new die(this.sides);
-               this.dice[i].roll();
-            }
-         }
-
-         this.result = function() {
-            return this.dice;
-         }
-
-         this.sum = function() {
-            var sum = 0;
-            for(var i=0; i<this.dice.length; i++){
-               sum += this.dice[i].result;
-            } 
-            return sum;
-         }
-
-         this.min = function() {
-            return this.count;
-         }
-
-         this.max = function() {
-            return this.sides * this.count;
-         }
-      }
-
-      roll = function (in_roll) {
-         this.groups = new Array();
-         this.mods = new Array();
-         this.input = "";
-
-         this.g = function(input) {
-            input = input.val().replace(/ /g,"").replace(/-(\d+)/, "+(-$1)");
-            this.name = input;
-            input = input.split("+");
-            for(var i=0;i<input.length;i++){
-               if(input[i].indexOf('d')) {
-                  parts = input[i].split('d');
-                  j = this.groups.length;
-                  console.log(j);
-                  this.groups[j] = new diegroup(parts[0], parts[1]); 
-                  this.groups[j].roll();
-               } else {
-                  this.mods.push(this); 
-               }
-            }
-         }; this.g(in_roll);
-
-         this.roll = function() {
-            for(var i=0; i<this.groups.length; i++) {
-               this.groups[i].roll();
-            }
-         }
-
-         this.result = function() {
-            var rollgroups = new Array();
-            for(var i=0; i<this.groups.length; i++) {
-               rollgroups.push(this.groups[i].result());
-            }
-            return rollgroups;
-         }
-
-         this.min = function() {
-            var sum = 0;
-            for(var i=0; i<this.groups.length; i++) {
-               sum += this.groups[i].min();
-            }
-            return sum;
-         }
-
-         this.max = function() {
-            var sum = 0;
-            for(var i=0; i<this.groups.length; i++) {
-               sum += this.groups[i].max();
-            }
-            return sum;
-         }
-      }
-
       var arolls;
       var dice;
       var roll_result;
@@ -158,14 +57,54 @@
             console.log(r.groups);
             
             for (var a in r.groups) {
+
                var group = r.groups[a];
-               console.log(group);
+
+               result_container.append("<fieldset><legend>" + 
+                  group.name + 
+                  "</legend><ul></ul></fieldset>");
+
+               var result_group = result_container
+               .children("fieldset:last-child")
+               .children("ul");
 
                for(var b in group.result()) {
                   var d = group.dice[b];
-                  console.log(d);
+
+                  if(group.dice.length >1) {
+                     var item = $("<li class=\"d" + d.sides + "\">")
+                        .hide().html(d.result);
+                     result_group.append(item);
+                  }
+                  if(b == (group.dice.length -1)) {
+                     item = $("<li class=\"total\">").hide().html(group.sum());
+                     result_group.append(item);
+                  }
                }
             }
+
+            var sub_total = $("<ul>").append($("<li class=\"sub total\">").hide().html(r.subtotal()));
+            var grand_total = $("<ul>").append($("<li class=\"grand total\">").hide().html(r.sum()));
+
+            result_container.append(sub_total);
+            result_container.append(grand_total);
+
+            lis = $("#" + uuid + " li");
+            function outer(){
+               var a = -1;
+               function inner() {
+                  if(a === lis.length){return;}
+                  a++;
+                  lis.eq(a).fadeIn(100, function(){
+                     $(this).animate({opacity:1.0}, 1000, function(){
+                        fader();
+                     });
+                  });
+               }
+               return inner;
+            }
+            var fader = outer();
+            fader();
             
             reset();
          });
@@ -174,32 +113,30 @@
       // ]]>
       </script>
 
-      <script type="text/javascript">
-      // <![CDATA[
-      /*
-                  console.log(this);
-                  if(this.indexOf('d')) {
-                      parts = this.split('d');
-                      min += parts[0];
-                      max += parts[1];
-                      for(i=0; i<parts[0]; i++) {
-                          rollnow = Math.floor(Math.random()*(parts[1] + 1)));
-                          dice.push(rollnow);
-                      }
-                  } else {
-                      mods.push(this); 
-                  }
-               });geearmour@gmail.com
-               console.log(dice);
+      <style type="text/css" media="screen">
+         /* <![CDATA[ */
+         
+         div { clear:left; }
+         fieldset {
+            float:left;
+         }
+         ul { margin:0;padding:0; }
+         li { 
+            float:left;
+            display:block;
+            list-style:none;
+            padding: 4px 8px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            color: #333;
+         }
+         li.total {
+            margin-left: 20px;
+            background-color: #C2FFAF;
+         }
+         /* ]]> */
+      </style>
 
-
-               return false;
-            })
-         });
-         */
-         // ]]>
-               //results_header.after("<h3>" + roll.val() + "</h3>" + "<p>" + roll_results + "</p>");
-      </script>
    </head>
    <body>
 
