@@ -41,7 +41,7 @@
 
          reset();
          var form = $("#rolling_form");
-         var result_header = $("#result h2");
+         var result = $("#result");
          var input_roll = $("#txt_roll");
 
          $("#do_roll").click(function(){
@@ -50,7 +50,7 @@
             r.roll();
 
             var uuid = createUUID();
-            result_header.after("<div class=\"result\" id=\"" + uuid + "\"><h3>" + r.name + "</h3></div>");
+            result.prepend("<div class=\"result_wrapper\"><div class=\"result\" id=\"" + uuid + "\"><h3>" + r.name + "</h3></div><br style=\"clear:both;\" /></div>");
 
             var result_container = $("#" + uuid);
 
@@ -60,45 +60,60 @@
 
                var group = r.groups[a];
 
-               result_container.append("<fieldset><legend>" + 
-                  group.name + 
-                  "</legend><ul></ul></fieldset>");
+               result_container.append($("<h4>").html(group.name)); 
+               result_container.append($("<p>")); 
 
                var result_group = result_container
-               .children("fieldset:last-child")
-               .children("ul");
+               .children("p:last-child");
 
                for(var b in group.result()) {
                   var d = group.dice[b];
 
                   if(group.dice.length >1) {
-                     var item = $("<li class=\"d" + d.sides + "\">")
+                     var item = $("<span class=\"d" + d.sides + "\">")
                         .hide().html(d.result);
                      result_group.append(item);
                   }
                   if(b == (group.dice.length -1)) {
-                     item = $("<li class=\"total\">").hide().html(group.sum());
+                     eq = $("<span class=\"operator\">").hide().html("=");
+                     item = $("<span class=\"total\">")
+                        .hide()
+                        .html(group.sum());
+                     result_group.append(eq);
                      result_group.append(item);
                   }
                }
             }
 
-            var sub_total = $("<ul>").append($("<li class=\"sub total\">").hide().html(r.subtotal()));
-            var grand_total = $("<ul>").append($("<li class=\"grand total\">").hide().html(r.sum()));
+            if(r.mods.length > 0) {
+               var sub_total = $("<p>")
+                  .append($("<span class=\"sub total\">")
+                  .hide().html(r.subtotal()));
+               result_container.append(sub_total);
+            }
 
-            result_container.append(sub_total);
+            var grand_total = $("<p>")
+               .append($("<h4>").html("Total")) 
+               .append($("<span class=\"grand total\">")
+               .hide().html(r.sum()));
             result_container.append(grand_total);
 
-            lis = $("#" + uuid + " li");
+            lis = $("#" + uuid + " span");
             function outer(){
                var a = -1;
                function inner() {
                   if(a === lis.length){return;}
                   a++;
-                  lis.eq(a).fadeIn(100, function(){
-                     $(this).animate({opacity:1.0}, 1000, function(){
+                  lis.eq(a).fadeIn(400, function(){
+
+                     if($(this).hasClass("operator")) {
                         fader();
-                     });
+                     } else {
+                        $(this).animate({opacity:1.0}, 600, function(){
+                           fader();
+                        });
+                     }
+
                   });
                }
                return inner;
@@ -114,45 +129,22 @@
       </script>
 
       <style type="text/css" media="screen">
-         /* <![CDATA[ */
-         
-         div { clear:left; }
-         fieldset {
-            float:left;
-         }
-         ul { margin:0;padding:0; }
-         li { 
-            float:left;
-            display:block;
-            list-style:none;
-            padding: 4px 8px;
-            margin: 2px;
-            border: 1px solid #ccc;
-            color: #333;
-         }
-         li.total {
-            margin-left: 20px;
-            background-color: #C2FFAF;
-         }
-         /* ]]> */
+         @import url('./reset.css'); 
+         @import url('./dice.css'); 
       </style>
 
    </head>
    <body>
 
-      <fieldset>
-         <legend>Dice Simulator</legend>
-            <p>
-               <label for="txt_roll">Roll:</label>
-               <input id="txt_roll" name="roll" />
-            </p>
-            <p>
-               <input type="submit" value="Roll" id="do_roll"/>
-            </p>
-      </fieldset>
+      <div id="container">
 
-      <div id="result">
-         <h2>Results:</h2>
+         <fieldset id="simulator">
+            <input id="txt_roll" name="roll" />
+            <input type="submit" value="Roll" id="do_roll"/>
+         </fieldset>
+
+         <div id="result"></div>
+
       </div>
 
    </body>

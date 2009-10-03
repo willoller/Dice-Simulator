@@ -14,7 +14,7 @@ die = function(sides) {
 diegroup = function(count, sides) {
    this.sides = sides;
    this.count = count;
-   this.name = this.count + "d" + this.sides;
+   this.name = "d" + this.sides;
 
    this.dice = [];
 
