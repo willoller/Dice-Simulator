@@ -124,6 +124,11 @@
             reset();
          });
 
+         $("#d20").click(function(){
+            $("#txt_roll").val("1d20"); 
+            $("#do_roll").click();
+         });
+
       });
       // ]]>
       </script>
@@ -142,6 +147,7 @@
             <input id="txt_roll" name="roll" />
             <input type="submit" value="Roll" id="do_roll"/>
          </fieldset>
+         <a id="d20" class="d20" href="#"><span class="d20">20</span></a>
 
          <div id="result"></div>
 
