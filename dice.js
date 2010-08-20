@@ -113,7 +113,7 @@ roll = function (in_roll) {
    this.sum = function() {
       var sum = this.subtotal();
       for(var i=0; i<this.mods.length; i++){
-         sum = parseInt(sum) + parseInt(this.mods[i]);
+         sum = parseInt(sum) + parseInt(this.mods[i].replace("(","").replace(")",""));
       } 
       return sum;
    }

@@ -85,3 +85,5 @@ h4 {
 .d20 { background: #ffbb33; }
 
 .buttonized { display: block; float: left; cursor: pointer; }
+
+label { display:block; float:right; }

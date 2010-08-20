@@ -83,18 +83,37 @@
                      item = $("<span class=\"total\">")
                         .hide()
                         .html(group.sum());
-                     result_group.append(eq);
+                     if(group.dice.length > 1) {
+                        result_group.append(eq);
+                     }
                      result_group.append(item);
                   }
                }
             }
 
+            for (var a in r.mods) {
+
+               var mod = r.mods[a];
+
+               result_container.append($("<h4>").html("mod")); 
+               result_container.append($("<p>")); 
+
+               var result_group = result_container
+               .children("p:last-child");
+
+               var item = $("<span>")
+                  .hide().html(mod.replace("(","").replace(")",""));
+               result_group.append(item);
+            }
+
+            /*
             if(r.mods.length > 0) {
                var sub_total = $("<p>")
                   .append($("<span class=\"sub total\">")
                   .hide().html(r.subtotal()));
                result_container.append(sub_total);
             }
+            */
 
             var grand_total = $("<p>")
                .append($("<h4>").html("Total")) 
@@ -108,12 +127,16 @@
                function inner() {
                   if(a === lis.length){return;}
                   a++;
-                  lis.eq(a).fadeIn(400, function(){
+
+                  var animateSpeed = 0;
+                  if($("#animate:checked").length > 0) animateSpeed = 300;
+
+                  lis.eq(a).fadeIn(animateSpeed, function(){
 
                      if($(this).hasClass("operator")) {
                         fader();
                      } else {
-                        $(this).animate({opacity:1.0}, 600, function(){
+                        $(this).animate({opacity:1.0}, animateSpeed, function(){
                            fader();
                         });
                      }
@@ -173,6 +196,7 @@
    <body>
 
       <div id="container">
+         <label for="animate"><input type="checkbox" id="animate" name="chkAnimate" /> Animation</label>
 
          <fieldset id="simulator">
             <input id="txt_roll" name="roll" />
