@@ -7,35 +7,6 @@
       <script type="text/javascript">
       // <![CDATA[
 
-(function($){
-    $.fn.extend({
-        '_data': $.fn.data,
-        'data' : function( key, value ) {
-            if ( typeof key === "undefined" && this.length ) {
-                return jQuery.data( this[0] );
-            } else if ( typeof key === "object" ) {
-                return this.each(function() {
-                    jQuery.data( this, key );
-                });
-            }
-            var retValue;
-            retValue = $.fn._data(key, value);
-            if ('undefined' == (typeof retValue) || retValue.length == 0) {
-                var nakedElem = this.get(0);
-                if (nakedElem.hasOwnProperty('dataset')) {
-                    if ('undefined' != (typeof nakedElem.dataset[key])) {
-                        retValue = nakedElem.dataset[key];
-                    }
-                } else {
-                    retValue = this.attr('data-'+key);
-                }
-            }
-            return retValue;
-        }
-    });
-})(jQuery);
-      
-
       function createUUID() {
          // THIS IS NOT A REAL UUID!!!
          var s = [];
@@ -80,6 +51,9 @@
             console.log(r);
 
             var uuid = createUUID();
+
+            $("span:hidden").show();
+
             result.prepend("<div class=\"result_wrapper\"><div class=\"result\" id=\"" + uuid + "\"><h3>" + r.name + "</h3></div><br style=\"clear:both;\" /></div>");
 
             var result_container = $("#" + uuid);
