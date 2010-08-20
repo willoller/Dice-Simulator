@@ -60,6 +60,7 @@ roll = function (in_roll) {
             parts = input[i].split('d');
             var j = this.groups.length;
             console.log(j);
+            if(parts[0] === null || parts[0] === "") parts[0] = 1;
             this.groups[j] = new diegroup(parts[0], parts[1]); 
             this.groups[j].roll();
          } else {
