@@ -7,6 +7,35 @@
       <script type="text/javascript">
       // <![CDATA[
 
+(function($){
+    $.fn.extend({
+        '_data': $.fn.data,
+        'data' : function( key, value ) {
+            if ( typeof key === "undefined" && this.length ) {
+                return jQuery.data( this[0] );
+            } else if ( typeof key === "object" ) {
+                return this.each(function() {
+                    jQuery.data( this, key );
+                });
+            }
+            var retValue;
+            retValue = $.fn._data(key, value);
+            if ('undefined' == (typeof retValue) || retValue.length == 0) {
+                var nakedElem = this.get(0);
+                if (nakedElem.hasOwnProperty('dataset')) {
+                    if ('undefined' != (typeof nakedElem.dataset[key])) {
+                        retValue = nakedElem.dataset[key];
+                    }
+                } else {
+                    retValue = this.attr('data-'+key);
+                }
+            }
+            return retValue;
+        }
+    });
+})(jQuery);
+      
+
       function createUUID() {
          // THIS IS NOT A REAL UUID!!!
          var s = [];
@@ -48,6 +77,7 @@
             
             r = new roll($("#txt_roll"));
             r.roll();
+            console.log(r);
 
             var uuid = createUUID();
             result.prepend("<div class=\"result_wrapper\"><div class=\"result\" id=\"" + uuid + "\"><h3>" + r.name + "</h3></div><br style=\"clear:both;\" /></div>");
@@ -129,6 +159,33 @@
             $("#do_roll").click();
          });
 
+         $("#do_buttonize").click(function() {
+            var values = new Array(2);   
+            values = $("#txt_roll").val().split("|");   
+
+            console.log(values);
+            console.log(values[1]);
+            if(values[1] === null || values[1] === undefined) values[1] = values[0];
+            console.log(values);
+
+            var button_title = values[0];
+            var button_value = values[1];
+
+            var button = $("<span>")
+               .attr("data-roll", button_value)
+               .addClass("d20 buttonized")
+               .html(button_title)
+               .click(function(){
+                  console.log("click");
+                  var roll = $(this).attr('data-roll');
+                  console.log(roll);
+                  $("#txt_roll").val(roll);   
+                  $("#do_roll").click();
+               });
+
+               $("#simulator").after(button);
+         });
+
       });
       // ]]>
       </script>
@@ -145,9 +202,9 @@
 
          <fieldset id="simulator">
             <input id="txt_roll" name="roll" />
-            <input type="submit" value="Roll" id="do_roll"/>
+            <button id="do_roll">Roll!</button>
+            <button id="do_buttonize">Buttonize!</button>
          </fieldset>
-         <a id="d20" class="d20" href="#"><span class="d20">20</span></a>
 
          <div id="result"></div>
 
