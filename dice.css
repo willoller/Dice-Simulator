@@ -1,33 +1,40 @@
-body {
-}
-
-#container {
+#container
+{
    border: 1px solid #ccc;
    background: #eee;
    padding: 20px;
    margin: 20px;
 }
 
-div { 
+div
+{ 
    clear:left; 
 }
 
-div.result_wrapper {
+div.result_wrapper
+{
    background: #fff;
    border: 1px solid #ccc;
    padding: 20px;
    margin-bottom: 10px;
 }
 
-fieldset {
+fieldset
+{
    float:left;
    border:0;
    padding:0;
    margin-bottom: 20px;
 }
 
-ul { margin:0;padding:0; }
-span { 
+ul 
+{ 
+    margin:0;
+    padding:0; 
+}
+
+span
+{ 
    float:left;
    display:block;
    list-style:none;
@@ -37,40 +44,54 @@ span {
    color: #333;
    -moz-border-radius: 2px;
 }
-span.total {
+span.total
+{
    background-color: #C2FFAF;
 }
-span.sub {
+span.sub
+{
    font-size: 200%;
    border-width: 12px;
 }
-span.grand {
+span.grand
+{
    font-size: 150%;
 }
-span.operator {
+span.operator
+{
    border-color: white;
 }
 
-#simulator {
+#simulator
+{
    background: white;
    border: 1px solid #ccc;
    padding: 0;
    -moz-border-radius: 4px;
 }
-#simulator input, #simulator button {
+
+#simulator input, 
+#simulator button 
+{
    font-size: 150%;
    float:left;
    -moz-border-radius: 4px;
 }
-#txt_roll {
+
+#txt_roll
+{
+
    border: 0;
    padding: 14px;
 }
-button {
+
+button
+{
    margin: 10px;
 }
 
-h4 {
+h4
+{
    clear:left;
    float:left;
    color: #ccc;
